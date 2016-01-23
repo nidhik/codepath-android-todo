@@ -19,6 +19,8 @@ public class EditItemActivity extends AppCompatActivity {
 
         etEditItem = (EditText) findViewById(R.id.etEditItem);
         etEditItem.setText(itemText);
+
+        etEditItem.requestFocus();
     }
 
     public void onSubmit(View v) {
