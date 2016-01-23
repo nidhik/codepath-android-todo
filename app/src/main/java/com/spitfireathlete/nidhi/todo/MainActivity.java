@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
     private ListView lvItems;
     private EditText etNewItem;
 
+    private final int EDIT_ITEM_REQUEST_CODE = 20;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 items.remove(position);
-                itemsAdapter.notifyDataSetChanged();
-                writeItems();
+                notifyDataChangedAndSave();
+
                 return true;
             }
         });
@@ -87,9 +89,22 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, EditItemActivity.class);
         intent.putExtra("itemText", itemText);
         intent.putExtra("itemPosition", itemPosition);
-        startActivity(intent);
+        startActivityForResult(intent, EDIT_ITEM_REQUEST_CODE);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // REQUEST_CODE is defined above
+        if (resultCode == RESULT_OK && requestCode == EDIT_ITEM_REQUEST_CODE) {
+
+            String newItemText = data.getExtras().getString("newItemText");
+            int pos = data.getExtras().getInt("itemPosition", 0);
+
+            items.set(pos, newItemText);
+
+            notifyDataChangedAndSave();
+        }
+    }
     private void readItems() {
         File filesDir = getFilesDir();
         File todoFile = new File(filesDir, "todo.txt");
@@ -109,6 +124,11 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void notifyDataChangedAndSave() {
+        itemsAdapter.notifyDataSetChanged();
+        writeItems();
     }
 
     public void onAddItem(View view) {
