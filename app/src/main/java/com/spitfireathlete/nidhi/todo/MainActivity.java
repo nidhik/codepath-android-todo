@@ -1,5 +1,6 @@
 package com.spitfireathlete.nidhi.todo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -73,6 +74,20 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                launchEditView(items.get(position), position);
+            }
+        });
+    }
+
+    private void launchEditView(String itemText, int itemPosition) {
+        Intent intent = new Intent(MainActivity.this, EditItemActivity.class);
+        intent.putExtra("itemText", itemText);
+        intent.putExtra("itemPosition", itemPosition);
+        startActivity(intent);
     }
 
     private void readItems() {
