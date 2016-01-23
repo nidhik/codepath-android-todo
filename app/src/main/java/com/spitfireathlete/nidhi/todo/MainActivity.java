@@ -20,7 +20,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private List<String> items;
+    private List<Task> items;
     private ArrayAdapter itemsAdapter;
 
     private ListView lvItems;
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         readItems();
 
-        itemsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
+        itemsAdapter = new TaskListAdapter(this, items);
         lvItems.setAdapter(itemsAdapter);
 
         setupListViewListener();
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+        lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 launchEditView(items.get(position), position);
@@ -85,9 +85,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void launchEditView(String itemText, int itemPosition) {
+    private void launchEditView(Task task, int itemPosition) {
         Intent intent = new Intent(MainActivity.this, EditItemActivity.class);
-        intent.putExtra("itemText", itemText);
+        intent.putExtra("itemText", task.getName());
         intent.putExtra("itemPosition", itemPosition);
         startActivityForResult(intent, EDIT_ITEM_REQUEST_CODE);
     }
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
             String newItemText = data.getExtras().getString("newItemText");
             int pos = data.getExtras().getInt("itemPosition", 0);
 
-            items.set(pos, newItemText);
+            items.set(pos, new Task(newItemText, "edited-task"));
 
             notifyDataChangedAndSave();
         }
@@ -109,9 +109,18 @@ public class MainActivity extends AppCompatActivity {
         File filesDir = getFilesDir();
         File todoFile = new File(filesDir, "todo.txt");
         try {
-            items = new ArrayList<String>(FileUtils.readLines(todoFile));
+
+            List<String> lines = new ArrayList<String>(FileUtils.readLines(todoFile));
+            items = new ArrayList<Task>();
+
+            String[] t;
+            for (String line : lines) {
+                t = line.split(",");
+                items.add(new Task(t[0], t[1]));
+            }
+
         } catch (IOException e) {
-            items = new ArrayList<String>();
+            items = new ArrayList<Task>();
         }
 
     }
@@ -120,6 +129,8 @@ public class MainActivity extends AppCompatActivity {
         File filesDir = getFilesDir();
         File todoFile = new File(filesDir, "todo.txt");
         try {
+
+            List<String> lines = new ArrayList<String>();
             FileUtils.writeLines(todoFile, items);
         } catch (IOException e) {
             e.printStackTrace();
@@ -133,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onAddItem(View view) {
         String itemText = etNewItem.getText().toString();
-        itemsAdapter.add(itemText);
+        itemsAdapter.add(new Task(itemText, "new-task"));
         etNewItem.setText("");
         writeItems();
     }
