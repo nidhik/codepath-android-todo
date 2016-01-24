@@ -16,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -88,7 +89,12 @@ public class MainActivity extends AppCompatActivity {
     private void launchEditView(Task task, int itemPosition) {
         Intent intent = new Intent(MainActivity.this, EditItemActivity.class);
         intent.putExtra("itemText", task.getName());
+        intent.putExtra("itemNotes", task.getDescription());
+        intent.putExtra("dateInMillis", Calendar.getInstance().getTimeInMillis());
+
         intent.putExtra("itemPosition", itemPosition);
+
+
         startActivityForResult(intent, EDIT_ITEM_REQUEST_CODE);
     }
 
@@ -98,9 +104,10 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK && requestCode == EDIT_ITEM_REQUEST_CODE) {
 
             String newItemText = data.getExtras().getString("newItemText");
+            String newDescriptionText = data.getExtras().getString("newItemNotes");
             int pos = data.getExtras().getInt("itemPosition", 0);
 
-            items.set(pos, new Task(newItemText, "edited-task"));
+            items.set(pos, new Task(newItemText, newDescriptionText));
 
             notifyDataChangedAndSave();
         }
