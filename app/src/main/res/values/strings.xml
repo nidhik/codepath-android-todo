@@ -6,4 +6,9 @@
     <string name="title_activity_edit_item">Edit Item</string>
     <string name="edit_item_title_label">Edit Item Below:</string>
     <string name="save_button_label">Save</string>
+    <string name="task_name_title">Name</string>
+    <string name="task_deadline_title">Deadline</string>
+    <string name="task_description_title">Notes</string>
+    <string name="task_priority_title">Priority</string>
+    <string name="task_status_title">Status</string>
 </resources>
