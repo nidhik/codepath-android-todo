@@ -1,6 +1,7 @@
 package com.spitfireathlete.nidhi.todo;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,18 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         }
 
         tvPriority.setText(task.getPriority().toString());
+
+        switch (task.getPriority()) {
+            case LOW:
+                tvPriority.setTextColor(Color.parseColor("#53F2E1"));
+                break;
+            case MEDIUM:
+                tvPriority.setTextColor(Color.parseColor("#FFC458"));
+                break;
+            case HIGH:
+                tvPriority.setTextColor(Color.parseColor("#FA6900"));
+                break;
+        }
 
         // Return the completed view to render on screen
         return convertView;
