@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -124,6 +126,37 @@ public class MainActivity extends AppCompatActivity {
             notifyDataChangedAndSave();
         }
     }
+
+    public void onAddItem(View view) {
+        String itemText = etNewItem.getText().toString();
+
+        Task task = new Task(itemText, "");
+        items.add(task);
+
+        etNewItem.setText("");
+
+        notifyDataChangedAndSave();
+       // writeItems();
+    }
+
+    private void notifyDataChangedAndSave() {
+        sortItemsByPriority();
+        itemsAdapter.notifyDataSetChanged();
+        writeItems();
+    }
+
+    private void sortItemsByPriority() {
+        Collections.sort(items, new Comparator<Task>() {
+            @Override
+            public int compare(Task t1, Task t2) {
+                return t1.getPriority().compareTo(t2.getPriority());
+            }
+        });
+    }
+
+
+    // Persistance
+
     private void readItems() {
         File filesDir = getFilesDir();
         File todoFile = new File(filesDir, "todo.txt");
@@ -159,21 +192,5 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void notifyDataChangedAndSave() {
-        itemsAdapter.notifyDataSetChanged();
-        writeItems();
-    }
-
-    public void onAddItem(View view) {
-        String itemText = etNewItem.getText().toString();
-
-        Task task = new Task(itemText, "");
-        itemsAdapter.add(task);
-
-        etNewItem.setText("");
-
-        writeItems();
     }
 }
