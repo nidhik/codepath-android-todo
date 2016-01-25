@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         Collections.sort(items, new Comparator<Task>() {
             @Override
             public int compare(Task t1, Task t2) {
-                return t1.getPriority().compareTo(t2.getPriority());
+                return t1.getPriority().compareTo(t2.getPriority()) * -1;
             }
         });
     }
