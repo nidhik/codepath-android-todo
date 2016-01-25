@@ -17,4 +17,5 @@ Notes:
 
 Walkthrough of all user stories:
 
+![Video Walkthrough](https://github.com/nidhik/codepath-android-todo/blob/master/codepath-assignment-android.gif)
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
