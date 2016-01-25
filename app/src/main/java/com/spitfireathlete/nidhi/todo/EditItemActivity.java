@@ -27,12 +27,15 @@ public class EditItemActivity extends AppCompatActivity {
 
         String itemText = getIntent().getStringExtra("itemText");
         String notes = getIntent().getStringExtra("itemNotes");
-
-
-        Calendar due = new GregorianCalendar();
-        due.setTimeInMillis(getIntent().getLongExtra("dateInMillis", -1));
-
         pos = getIntent().getIntExtra("itemPosition", 0);
+        Priority p = Priority.fromValue(getIntent().getIntExtra("priority", 0));
+
+
+        long millis = getIntent().getLongExtra("dateInMillis", -1);
+        Calendar due = new GregorianCalendar();
+        due.setTimeInMillis(millis);
+        dpDeadline = (DatePicker) findViewById(R.id.dpDeadline);
+        dpDeadline.updateDate(due.get(Calendar.YEAR), due.get(Calendar.MONTH), due.get(Calendar.DAY_OF_MONTH));
 
         etEditItem = (EditText) findViewById(R.id.etEditItem);
         etEditItem.setText(itemText);
@@ -40,10 +43,20 @@ public class EditItemActivity extends AppCompatActivity {
         etEditNotes = (EditText) findViewById(R.id.etNotes);
         etEditNotes.setText(notes);
 
-        dpDeadline = (DatePicker) findViewById(R.id.dpDeadline);
-        dpDeadline.updateDate(due.get(Calendar.YEAR), due.get(Calendar.MONTH), due.get(Calendar.DAY_OF_MONTH));
 
         rgPriority = (RadioGroup) findViewById(R.id.rgPriority);
+
+        switch (p) {
+            case LOW:
+                rgPriority.check(R.id.radio_low);
+                break;
+            case MEDIUM:
+                rgPriority.check(R.id.radio_med);
+                break;
+            case HIGH:
+                rgPriority.check(R.id.radio_high);
+                break;
+        }
 
         etEditItem.requestFocus();
     }
@@ -53,9 +66,32 @@ public class EditItemActivity extends AppCompatActivity {
 
         String newItemText = etEditItem.getText().toString();
         String newItemNotes = etEditNotes.getText().toString();
-        intent.putExtra("newItemText", newItemText);
-        intent.putExtra("newItemNotes", newItemNotes);
+        Calendar deadline = new GregorianCalendar(dpDeadline.getYear(), dpDeadline.getMonth(), dpDeadline.getDayOfMonth());
+        int checked = rgPriority.getCheckedRadioButtonId();
+        Priority p;
+        switch (checked) {
+            case R.id.radio_low:
+                p = Priority.LOW;
+                break;
+            case R.id.radio_med:
+                p = Priority.MEDIUM;
+                break;
+            case R.id.radio_high:
+                p = Priority.HIGH;
+                break;
+            default:
+                p = Priority.LOW;
+        }
+
+
+
+
+        intent.putExtra("itemText", newItemText);
+        intent.putExtra("itemNotes", newItemNotes);
         intent.putExtra("itemPosition", pos);
+        intent.putExtra("dateInMillis", deadline.getTimeInMillis());
+        intent.putExtra("priority", p.ordinal());
+
         setResult(RESULT_OK, intent);
 
         this.finish();

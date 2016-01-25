@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -91,9 +92,8 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("itemText", task.getName());
         intent.putExtra("itemNotes", task.getDescription());
         intent.putExtra("dateInMillis", Calendar.getInstance().getTimeInMillis());
-
         intent.putExtra("itemPosition", itemPosition);
-
+        intent.putExtra("priority", task.getPriority().ordinal());
 
         startActivityForResult(intent, EDIT_ITEM_REQUEST_CODE);
     }
@@ -103,11 +103,23 @@ public class MainActivity extends AppCompatActivity {
         // REQUEST_CODE is defined above
         if (resultCode == RESULT_OK && requestCode == EDIT_ITEM_REQUEST_CODE) {
 
-            String newItemText = data.getExtras().getString("newItemText");
-            String newDescriptionText = data.getExtras().getString("newItemNotes");
-            int pos = data.getExtras().getInt("itemPosition", 0);
+            Bundle bundle = data.getExtras();
 
-            items.set(pos, new Task(newItemText, newDescriptionText));
+            String newItemText = bundle.getString("itemText");
+            String newDescriptionText = bundle.getString("itemNotes");
+            int pos = bundle.getInt("itemPosition", 0);
+            Priority priority = Priority.fromValue(bundle.getInt("priority", 0));
+            Calendar deadline = new GregorianCalendar();
+            deadline.setTimeInMillis(bundle.getLong("dateInMillis"));
+
+
+            Task t = items.get(pos);
+            t.setName(newItemText);
+            t.setDescription(newDescriptionText);
+            t.setPriority(priority);
+            t.setDeadline(deadline);
+
+//            items.set(pos, new Task(newItemText, newDescriptionText));
 
             notifyDataChangedAndSave();
         }
@@ -123,7 +135,12 @@ public class MainActivity extends AppCompatActivity {
             String[] t;
             for (String line : lines) {
                 t = line.split(",");
-                items.add(new Task(t[0], t[1]));
+                if (t.length > 2) {
+                    items.add(new Task(t[0], t[1], Long.parseLong(t[2]), Integer.parseInt(t[3])));
+                } else {
+                    items.add(new Task(t[0], t[1]));
+                }
+
             }
 
         } catch (IOException e) {
@@ -151,8 +168,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void onAddItem(View view) {
         String itemText = etNewItem.getText().toString();
-        itemsAdapter.add(new Task(itemText, "new-task"));
+
+        Task task = new Task(itemText, "");
+        itemsAdapter.add(task);
+
         etNewItem.setText("");
+
         writeItems();
     }
 }
