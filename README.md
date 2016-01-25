@@ -4,7 +4,7 @@ Time spent: about 5 hours spent in total (not counting Android Dev env and IDE i
 
 Completed user stories:
 
- * [x] Required: User can view a list of tasks.
+ * [x] Required: User can view a (persisted) list of tasks.
  * [x] Required: User can delete tasks or add new tasks.
  * [x] Required: User can edit tasks.
  * [x] Optional: Improve style of the todo items in the list using a custom adapter
